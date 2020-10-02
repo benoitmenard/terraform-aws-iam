@@ -16,6 +16,30 @@ variable "trusted_role_services" {
   default     = []
 }
 
+variable "trusted_role_federateds" {
+  description = "AWS IDP that can assume these roles"
+  type        = list(string)
+  default     = []
+}
+
+variable "federated_is_saml" {
+  description = "Add the action sts:AssumeRoleWithSAML"
+  type        = bool
+  default     = false
+}
+
+variable "aws_saml_endpoint" {
+  description = "AWS SAML Endpoint"
+  default     = "https://signin.aws.amazon.com/saml"
+  type        = string
+}
+
+variable "federated_is_web" {
+  description = "add the action sts:AssumeRoleWithWebIdentity"
+  type        = bool
+  default     = false
+}
+
 variable "mfa_age" {
   description = "Max age of valid MFA (in seconds) for roles which require MFA"
   type        = number

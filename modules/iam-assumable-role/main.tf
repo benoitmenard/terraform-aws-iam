@@ -1,8 +1,16 @@
+locals {
+  trusted_role_actions = concat(
+    var.trusted_role_actions,
+    var.federated_is_saml ? ["sts:AssumeRoleWithSAML"] : [],
+    var.federated_is_web ? ["sts:AssumeRoleWithWebIdentity"] : []
+  )
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
 
-    actions = var.trusted_role_actions
+    actions = local.trusted_role_actions
 
     principals {
       type        = "AWS"
@@ -14,12 +22,26 @@ data "aws_iam_policy_document" "assume_role" {
       identifiers = var.trusted_role_services
     }
 
+    principals {
+      type        = "Federated"
+      identifiers = var.trusted_role_federateds
+    }
+
     dynamic "condition" {
       for_each = var.role_sts_externalid != null ? [true] : []
       content {
         test     = "StringEquals"
         variable = "sts:ExternalId"
         values   = [var.role_sts_externalid]
+      }
+    }
+
+    dynamic "condition" {
+      for_each = var.aws_saml_endpoint != null ? [true] : []
+      content {
+        test     = "StringEquals"
+        variable = "SAML:aud"
+        values   = [var.aws_saml_endpoint]
       }
     }
   }
