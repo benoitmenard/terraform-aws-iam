@@ -1,8 +1,8 @@
 locals {
   trusted_role_actions = concat(
     var.trusted_role_actions,
-    var.federated_is_saml ? ["sts:AssumeRoleWithSAML"] : [],
-    var.federated_is_web ? ["sts:AssumeRoleWithWebIdentity"] : []
+    var.federated_is_saml && var.role_requires_mfa == false ? ["sts:AssumeRoleWithSAML"] : [],
+    var.federated_is_web && var.role_requires_mfa == false ? ["sts:AssumeRoleWithWebIdentity"] : []
   )
 }
 
